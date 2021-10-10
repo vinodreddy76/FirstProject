@@ -9,7 +9,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@variables('FileExists').exists",
+						"value": "@variables('FileExists')",
 						"type": "Expression"
 					},
 					"activities": [
