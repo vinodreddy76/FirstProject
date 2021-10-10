@@ -59,6 +59,17 @@
 									"value": "@activity('GetFileInfo').output.exists",
 									"type": "Expression"
 								},
+								"ifFalseActivities": [
+									{
+										"name": "Wait30Sec",
+										"type": "Wait",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"waitTimeInSeconds": 30
+										}
+									}
+								],
 								"ifTrueActivities": [
 									{
 										"name": "SetExistsinfo",
