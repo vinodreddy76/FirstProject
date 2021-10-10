@@ -1,5 +1,5 @@
 {
-	"name": "LookupCsvFile",
+	"name": "LookupSalesDetaisTable",
 	"properties": {
 		"activities": [
 			{
