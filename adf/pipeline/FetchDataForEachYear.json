@@ -24,7 +24,39 @@
 					"dataset": {
 						"referenceName": "AzureSqlTable",
 						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "FetchDataforEachYear",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "FetchYearInformation",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('FetchYearInformation').output.value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Waitfor5sec",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 5
+							}
+						}
+					]
 				}
 			}
 		],
