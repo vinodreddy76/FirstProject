@@ -1,0 +1,52 @@
+{
+	"name": "dataflow2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Source_tblUser",
+						"type": "DatasetReference"
+					},
+					"name": "SourceDataExtractForUpdate"
+				},
+				{
+					"dataset": {
+						"referenceName": "Destination_User_Table",
+						"type": "DatasetReference"
+					},
+					"name": "DestinationDataForUpdate"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Destination_User_Table",
+						"type": "DatasetReference"
+					},
+					"name": "DestinationLoadNewData"
+				},
+				{
+					"dataset": {
+						"referenceName": "Destination_User_Table",
+						"type": "DatasetReference"
+					},
+					"name": "sinkDestination"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DataForInsert"
+				},
+				{
+					"name": "ExistsForUpdate"
+				},
+				{
+					"name": "AlterRowUpdate"
+				}
+			],
+			"script": "source(output(\n\t\tKey as integer,\n\t\tName as string,\n\t\tPhone as string,\n\t\tLast_m as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> SourceDataExtractForUpdate\nsource(output(\n\t\tKey as integer,\n\t\tName as string,\n\t\tPhone as string,\n\t\tLast_m as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DestinationDataForUpdate\nSourceDataExtractForUpdate, DestinationDataForUpdate exists(SourceDataExtractForUpdate@Key == DestinationDataForUpdate@Key,\n\tnegate:true,\n\tbroadcast: 'auto')~> DataForInsert\nSourceDataExtractForUpdate, DestinationDataForUpdate exists(SourceDataExtractForUpdate@Key == DestinationDataForUpdate@Key,\n\tnegate:false,\n\tbroadcast: 'auto')~> ExistsForUpdate\nExistsForUpdate alterRow(updateIf(true())) ~> AlterRowUpdate\nDataForInsert sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tKey as integer,\n\t\tName as string,\n\t\tPhone as string,\n\t\tLast_m as date\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tKey,\n\t\tName,\n\t\tPhone,\n\t\tLast_m\n\t)) ~> DestinationLoadNewData\nAlterRowUpdate sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tKey as integer,\n\t\tName as string,\n\t\tPhone as string,\n\t\tLast_m as date\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['Key'],\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tKey,\n\t\tName,\n\t\tPhone,\n\t\tLast_m\n\t)) ~> sinkDestination"
+		}
+	}
+}
