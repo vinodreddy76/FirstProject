@@ -1,5 +1,5 @@
 {
-	"name": "FullLoadSql",
+	"name": "LogicAppEmailAlert_ForFullLoad",
 	"properties": {
 		"activities": [
 			{

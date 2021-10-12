@@ -1,0 +1,147 @@
+{
+	"name": "LogicAppEmailAlerts_Success_Failure",
+	"properties": {
+		"activities": [
+			{
+				"name": "FullLoad",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"wildcardFileName": "*File_1.csv",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"type": "String",
+									"ordinal": 1
+								},
+								"sink": {
+									"name": "Columnundefined",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"type": "String",
+									"ordinal": 2
+								},
+								"sink": {
+									"name": "Columnundefined",
+									"type": "String",
+									"physicalType": "String"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Inputs",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Outputs",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "SendEmailForSuccess",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "FullLoad",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://prod-25.uaenorth.logic.azure.com:443/workflows/782a0240377b427ab0ef12002f013044/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ZiAB5yuoHrBVmpmTzAia16Ln1YyQj6xoywwsa_oDY1o",
+					"method": "POST",
+					"body": {
+						"value": "{\n\"Title\":\"ADF Data Pipeline Execution Successful\",\n\"Message\":\"Full Load ADF data pipeline activity completed Successfully\",\n\"DataFactoryName\":\"@{pipeline().DataFactory}\",\n\"PipelineName\":\"@{pipeline().Pipeline}\",\n\"PipelineRunID\":\"@{pipeline().TriggerName}\",\n\"CompletedTime\":\"@{utcnow()}\"\n}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "SendEmailForFailure",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "FullLoad",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://prod-25.uaenorth.logic.azure.com:443/workflows/782a0240377b427ab0ef12002f013044/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ZiAB5yuoHrBVmpmTzAia16Ln1YyQj6xoywwsa_oDY1o",
+					"method": "POST",
+					"body": {
+						"value": "{\n\"Title\":\"ADF Data Pipeline Failed\",\n\"Message\":\"Full Load ADF data pipeline activity failed\",\n\"DataFactoryName\":\"@{pipeline().DataFactory}\",\n\"PipelineName\":\"@{pipeline().Pipeline}\",\n\"PipelineRunID\":\"@{pipeline().TriggerName}\",\n\"CompletedTime\":\"@{utcnow()}\"\n}",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"annotations": []
+	}
+}
