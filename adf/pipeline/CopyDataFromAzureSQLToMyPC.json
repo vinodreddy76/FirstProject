@@ -51,13 +51,7 @@
 				"inputs": [
 					{
 						"referenceName": "AzureSqlSource",
-						"type": "DatasetReference",
-						"parameters": {
-							"TableName": {
-								"value": "@activity('ListAllTables').output.firstrow.name",
-								"type": "Expression"
-							}
-						}
+						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
