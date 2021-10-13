@@ -1,0 +1,21 @@
+{
+	"name": "DelimitedText_Local_Folder",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MyComputerFileSystem",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "FileServerLocation"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
