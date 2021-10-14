@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "dataflow2",
+						"referenceName": "IncrementalExtractUsingDataFlow1",
 						"type": "DataFlowReference"
 					},
 					"compute": {

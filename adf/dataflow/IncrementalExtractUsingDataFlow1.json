@@ -1,5 +1,5 @@
 {
-	"name": "dataflow2",
+	"name": "IncrementalExtractUsingDataFlow1",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
