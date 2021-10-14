@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "AzureBlobOutput",
+						"referenceName": "AzureOutputs",
 						"type": "DatasetReference"
 					},
 					"name": "MycsvDestination"
