@@ -1,9 +1,0 @@
-{
-	"name": "vinoddevelopment",
-	"location": "uaenorth",
-	"identity": {
-		"type": "SystemAssigned",
-		"principalId": "d8f26114-3dd5-4835-82a7-123fa497832b",
-		"tenantId": "cb0f251e-636e-423b-97e4-102997fac022"
-	}
-}
