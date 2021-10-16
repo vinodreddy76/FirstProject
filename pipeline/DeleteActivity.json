@@ -1,9 +1,9 @@
 {
-	"name": "DeleteBlobFiles",
+	"name": "DeleteActivity",
 	"properties": {
 		"activities": [
 			{
-				"name": "DeleteBlobFiles",
+				"name": "DeleteSourceFiles",
 				"type": "Delete",
 				"dependsOn": [],
 				"policy": {
