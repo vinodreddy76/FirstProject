@@ -1,0 +1,36 @@
+{
+	"name": "IncrementalExtractUsingDataFlow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "SourceDataForUpdate"
+				},
+				{
+					"name": "DestinationData"
+				}
+			],
+			"sinks": [
+				{
+					"name": "LoadNewDataIntoDestination"
+				},
+				{
+					"name": "UpdateData"
+				}
+			],
+			"transformations": [
+				{
+					"name": "CheckDestinationForInsert"
+				},
+				{
+					"name": "IdentifyUpdatedData"
+				},
+				{
+					"name": "AlterRowUpdate"
+				}
+			],
+			"script": "source(output(\n\t\tKey as integer,\n\t\tName as string,\n\t\tPhone as string,\n\t\tLast_m as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> SourceDataForUpdate\nsource(output(\n\t\tKey as integer,\n\t\tName as string,\n\t\tPhone as string,\n\t\tLast_m as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> DestinationData\nSourceDataForUpdate, DestinationData exists(SourceDataForUpdate@Key == DestinationData@Key,\n\tnegate:true,\n\tbroadcast: 'auto')~> CheckDestinationForInsert\nSourceDataForUpdate, DestinationData exists(SourceDataForUpdate@Key == DestinationData@Key,\n\tnegate:false,\n\tbroadcast: 'auto')~> IdentifyUpdatedData\nIdentifyUpdatedData alterRow(updateIf(true())) ~> AlterRowUpdate\nCheckDestinationForInsert sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tKey,\n\t\tName,\n\t\tPhone,\n\t\tLast_m\n\t)) ~> LoadNewDataIntoDestination\nAlterRowUpdate sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tKey,\n\t\tName,\n\t\tPhone,\n\t\tLast_m\n\t)) ~> UpdateData"
+		}
+	}
+}
