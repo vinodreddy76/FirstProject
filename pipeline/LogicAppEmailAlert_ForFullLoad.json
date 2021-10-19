@@ -1,0 +1,60 @@
+{
+	"name": "LogicAppEmailAlert_ForFullLoad",
+	"properties": {
+		"activities": [
+			{
+				"name": "FullLoad",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false
+				}
+			},
+			{
+				"name": "SendEmailLogicApps",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "FullLoad",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://prod-25.uaenorth.logic.azure.com:443/workflows/782a0240377b427ab0ef12002f013044/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ZiAB5yuoHrBVmpmTzAia16Ln1YyQj6xoywwsa_oDY1o",
+					"method": "POST",
+					"body": {
+						"value": "{\n\"Title\":\"ADF Data Pipeline E-mail\",\n\"Message\":\"Full Load ADF data pipeline activity completed\",\n\"DataFactoryName\":\"@{pipeline().DataFactory}\",\n\"PipelineName\":\"@{pipeline().Pipeline}\",\n\"PipelineRunID\":\"@{pipeline().RunId}\",\n\"CompletedTime\":\"@{utcnow()}\"\n}",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"annotations": []
+	}
+}
