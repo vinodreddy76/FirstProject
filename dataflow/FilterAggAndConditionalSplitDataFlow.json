@@ -1,0 +1,36 @@
+{
+	"name": "FilterAggAndConditionalSplitDataFlow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "SalesSource"
+				}
+			],
+			"sinks": [
+				{
+					"name": "USA"
+				},
+				{
+					"name": "IndiaSales"
+				},
+				{
+					"name": "UKSales"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Filter2014"
+				},
+				{
+					"name": "AggregateYearWise"
+				},
+				{
+					"name": "SplitSalesDataOnCountry"
+				}
+			],
+			"script": "source(output(\n\t\tCountry as string,\n\t\tYear as integer,\n\t\tProduct_Type as string,\n\t\tSales as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> SalesSource\nSalesSource filter(Year != 2014) ~> Filter2014\nFilter2014 aggregate(groupBy(Country,\n\t\tYear),\n\tSales = sum(Sales)) ~> AggregateYearWise\nAggregateYearWise split(Country=='USA',\n\tCountry=='IND',\n\tdisjoint: false) ~> SplitSalesDataOnCountry@(USA, India, Default)\nSplitSalesDataOnCountry@USA sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['USASales.csv'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> USA\nSplitSalesDataOnCountry@India sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['IndiaSales'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> IndiaSales\nSplitSalesDataOnCountry@Default sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['UKSales.csv'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> UKSales"
+		}
+	}
+}
