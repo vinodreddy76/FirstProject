@@ -1,0 +1,36 @@
+{
+	"name": "IncrementalExtractUsingDataFlow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "SourceDataExtractForUpdate"
+				},
+				{
+					"name": "DestinationDataForUpdate"
+				}
+			],
+			"sinks": [
+				{
+					"name": "DestinationLoadNewData"
+				},
+				{
+					"name": "sinkDestination"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DataForInsert"
+				},
+				{
+					"name": "ExistsForUpdate"
+				},
+				{
+					"name": "AlterRowUpdate"
+				}
+			],
+			"script": "source(output(\n\t\tKey as integer,\n\t\tName as string,\n\t\tPhone as string,\n\t\tLast_m as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> SourceDataExtractForUpdate\nsource(output(\n\t\tKey as integer,\n\t\tName as string,\n\t\tPhone as string,\n\t\tLast_m as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> DestinationDataForUpdate\nSourceDataExtractForUpdate, DestinationDataForUpdate exists(SourceDataExtractForUpdate@Key == DestinationDataForUpdate@Key,\n\tnegate:true,\n\tbroadcast: 'auto')~> DataForInsert\nSourceDataExtractForUpdate, DestinationDataForUpdate exists(SourceDataExtractForUpdate@Key == DestinationDataForUpdate@Key,\n\tnegate:false,\n\tbroadcast: 'auto')~> ExistsForUpdate\nExistsForUpdate alterRow(updateIf(true())) ~> AlterRowUpdate\nDataForInsert sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tKey,\n\t\tName,\n\t\tPhone,\n\t\tLast_m\n\t)) ~> DestinationLoadNewData\nAlterRowUpdate sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tKey,\n\t\tName,\n\t\tPhone,\n\t\tLast_m\n\t)) ~> sinkDestination"
+		}
+	}
+}
