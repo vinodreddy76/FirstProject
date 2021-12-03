@@ -1,0 +1,16 @@
+{
+	"name": "ds_Onprem_sales_order_detail_binary",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MyComputerFileSystem",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "FileServerLocation"
+			}
+		}
+	}
+}
