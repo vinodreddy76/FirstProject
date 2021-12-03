@@ -9,7 +9,8 @@
 		"type": "Binary",
 		"typeProperties": {
 			"location": {
-				"type": "FileServerLocation"
+				"type": "FileServerLocation",
+				"fileName": "sales-order-detail.csv"
 			}
 		}
 	}
